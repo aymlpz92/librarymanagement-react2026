@@ -30,7 +30,10 @@ export class BookService {
   }
 
   addBook(book: Book): boolean {
-    if (book) {
+    if (book 
+      && book.title != null
+    && book.totalCopies > 0
+  ) {
       this.books.push(book);
       return true;
     }
@@ -39,7 +42,9 @@ export class BookService {
 
   borrowBook(id: number): boolean {
     const book = this.books.find((book) => book.id === id);
-    if (book) {
+    if (book
+      && book.availableCopies > 0
+    ) {
       book.availableCopies--;
       return true;
     }
@@ -48,7 +53,7 @@ export class BookService {
 
   returnBook(id: number): boolean {
     const book = this.books.find((book) => book.id === id);
-    if (book) {
+    if (book && book.totalCopies > book.availableCopies) {
       book.availableCopies++;
       return true;
     }
@@ -66,8 +71,13 @@ export class BookService {
   updateBook(updatedBook: Book): boolean {
     if (updatedBook) {
       const index = this.books.findIndex((book) => book.id === updatedBook.id);
-      this.books[index] = updatedBook;
-      return true;
+      if (index < 0) {
+        return false;
+      }
+      if (updatedBook.author && updatedBook.title && updatedBook.availableCopies && updatedBook.totalCopies) {
+        this.books[index] = updatedBook;
+        return true;
+      }
     }
     return false;
   }
